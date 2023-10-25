@@ -6,9 +6,9 @@ import fr.istic.prg.list_util.SuperT;
 /**
  * Classe représentant les sous-ensembles de la classe MySet.
  * 
- * @author Mickaël Foursov <foursov@univ-rennes1.fr>
- * @version 5.0
- * @since 2022-09-23
+ * @author Antonella Atterey <antonella.atterey@etudiant.univ-rennes1.fr>
+ * @author Ezan Tahi <ezan.tahi@etudiant.univ-rennes1.fr>
+ * @class L3 MIAGE 2023/2024
  */
 
 public class SubSet implements SuperT<SubSet> {
