@@ -97,7 +97,7 @@ public class MySet extends List<SubSet> {
 				it.goForward();
 			}
 			SubSet sub = it.getValue();
-			return (sub.rank == rank && sub.set.contains(rank%256));
+			return sub.rank == rank && sub.set.contains(value % 256);
 		}
 		return false;
 	}
@@ -118,15 +118,20 @@ public class MySet extends List<SubSet> {
 	 * @param is flux d'entrée.
 	 */
 	public void addAllFromStream(InputStream is) {
+		Scanner scan = new Scanner(is);
 		try {
-			int number = is.read();
+			int number = scan.nextInt();
 			while (number != -1) {
 				this.addNumber(number);
-				number = is.read();
+				number = scan.nextInt();
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("ATTENTION: L'un des nombres saisi n'est pas un entier.");
+		} finally {
+			if (is != System.in) {
+				scan.close();
+			}
 		}
 	}
 
@@ -145,10 +150,10 @@ public class MySet extends List<SubSet> {
 			}
 			SubSet sub = it.getValue();
 			if (sub.rank == rank) {
-				sub.set.add(rank%256);
+				sub.set.add(value % 256);
 			} else {
 				SmallSet set = new SmallSet();
-				set.add(rank%256);
+				set.add(value % 256);
 				it.addLeft(new SubSet(rank, set));
 			}
 		}
@@ -170,15 +175,20 @@ public class MySet extends List<SubSet> {
 	 * @param is flux d'entrée
 	 */
 	public void removeAllFromStream(InputStream is) {
+		Scanner scan = new Scanner(is);
 		try {
-			int number = is.read();
+			int number = scan.nextInt();
 			while (number != -1) {
 				this.removeNumber(number);
-				number = is.read();
+				number = scan.nextInt();
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("ATTENTION: L'un des nombres saisi n'est pas un entier.");
+		} finally {
+			if (is != System.in) {
+				scan.close();
+			}
 		}
 	}
 
@@ -197,7 +207,7 @@ public class MySet extends List<SubSet> {
 			}
 			SubSet sub = it.getValue();
 			if (sub.rank == rank) {
-				sub.set.remove(rank%256);
+				sub.set.remove(value % 256);
 				// Suppression des SubSet vides
 				if (sub.set.isEmpty()) {
 					it.remove();
@@ -212,7 +222,7 @@ public class MySet extends List<SubSet> {
 	public int size() {
 		Iterator<SubSet> it = iterator();
 		int size = 0;
-		
+
 		while (!it.isOnFlag()) {
 			size += it.getValue().set.size();
 			it.goForward();
@@ -232,7 +242,7 @@ public class MySet extends List<SubSet> {
 	public void difference(MySet set2) {
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
-		
+
 		while (!it1.isOnFlag() && !it2.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
@@ -242,7 +252,11 @@ public class MySet extends List<SubSet> {
 				it2.goForward();
 			} else {
 				sub1.set.difference(sub2.set);
-				it1.goForward();
+				// Suppression des SubSet vides
+				if (sub1.set.isEmpty()) {
+					it1.remove();
+				}
+				//it1.goForward();
 				it2.goForward();
 			}
 		}
@@ -256,14 +270,14 @@ public class MySet extends List<SubSet> {
 	public void symmetricDifference(MySet set2) {
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
-		
+
 		while (!it1.isOnFlag() && !it2.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
 			if (sub1.rank < sub2.rank) {
 				it1.goForward();
 			} else if (sub1.rank > sub2.rank) {
-				it1.addLeft(sub2);
+				it1.addLeft(sub2.copyOf()); // test this
 				it2.goForward();
 			} else {
 				sub1.set.symmetricDifference(sub2.set);
@@ -281,7 +295,7 @@ public class MySet extends List<SubSet> {
 	public void intersection(MySet set2) {
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
-		
+
 		while (!it1.isOnFlag() && !it2.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
@@ -305,18 +319,25 @@ public class MySet extends List<SubSet> {
 	public void union(MySet set2) {
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
-		
+
 		while (!it1.isOnFlag() && !it2.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
-			if (sub1.rank > sub2.rank) {
-				it1.addLeft(it2.getValue());
+			if (sub1.rank < sub2.rank) {
+				it1.goForward();
+			} else if (sub1.rank > sub2.rank) {
+				it1.addLeft(it2.getValue().copyOf());
 				it2.goForward();
 			} else {
 				sub1.set.union(sub2.set);
 				it1.goForward();
 				it2.goForward();
 			}
+		}
+		
+		while (!it2.isOnFlag()) {
+			it1.addLeft(it2.getValue().copyOf());
+			it2.goForward();
 		}
 	}
 
@@ -338,11 +359,15 @@ public class MySet extends List<SubSet> {
 		} else if (!(o instanceof MySet)) {
 			return false;
 		}
-		
+
 		MySet set2 = (MySet) o;
+		if (size() != set2.size()) {
+			return false;
+		}
+		
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
-		
+
 		while (!it1.isOnFlag() && !it2.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
@@ -361,11 +386,11 @@ public class MySet extends List<SubSet> {
 	 */
 	public boolean isIncludedIn(MySet set2) {
 		Iterator<SubSet> it2 = set2.iterator();
-		
+
 		while (!it2.isOnFlag()) {
 			SubSet sub2 = it2.getValue();
 			for (int i = 0; i < 256; i++) {
-				int x = (256*sub2.rank) + i;
+				int x = (256 * sub2.rank) + i;
 				if (sub2.set.contains(i) && !this.containsValue(x)) {
 					return false;
 				}
