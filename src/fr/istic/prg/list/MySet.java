@@ -242,6 +242,12 @@ public class MySet extends List<SubSet> {
 	public void difference(MySet set2) {
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
+		
+		if (this.equals(set2)) {
+			while (!it1.isOnFlag()) {
+				it1.remove();
+			}
+		}
 
 		while (!it1.isOnFlag() && !it2.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
@@ -255,8 +261,9 @@ public class MySet extends List<SubSet> {
 				// Suppression des SubSet vides
 				if (sub1.set.isEmpty()) {
 					it1.remove();
+				} else {
+					it1.goForward();
 				}
-				//it1.goForward();
 				it2.goForward();
 			}
 		}
