@@ -565,6 +565,8 @@ public class TestMySet {
 		mySet3.addNumber(800);
 
 		mySet1.union(mySet2);
+		System.out.println(mySet1.toString());
+		System.out.println(mySet3.toString());
 		assertTrue("union 100 and 100+101+400+800", compareMySets(mySet1, mySet3));
 	}
 

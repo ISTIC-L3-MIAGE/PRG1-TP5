@@ -243,10 +243,9 @@ public class MySet extends List<SubSet> {
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 		
-		if (this.equals(set2)) {
-			while (!it1.isOnFlag()) {
-				it1.remove();
-			}
+		if (this == set2) {
+			this.clear();
+			return;
 		}
 
 		while (!it1.isOnFlag() && !it2.isOnFlag()) {
@@ -300,6 +299,10 @@ public class MySet extends List<SubSet> {
 	 * @param set2 deuxième ensemble
 	 */
 	public void intersection(MySet set2) {
+		if (this == set2) {
+			return;
+		}
+		
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
@@ -312,9 +315,18 @@ public class MySet extends List<SubSet> {
 				it2.goForward();
 			} else {
 				sub1.set.intersection(sub2.set);
-				it1.goForward();
+				// Suppression des SubSet vides
+				if (sub1.set.isEmpty()) {
+					it1.remove();
+				} else {
+					it1.goForward();
+				}
 				it2.goForward();
 			}
+		}
+		
+		while (!it1.isOnFlag() && it2.isOnFlag()) {
+			it1.remove();
 		}
 	}
 
@@ -324,6 +336,10 @@ public class MySet extends List<SubSet> {
 	 * @param set2 deuxième ensemble
 	 */
 	public void union(MySet set2) {
+		if (this == set2) {
+			return;
+		}
+		
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
@@ -344,6 +360,7 @@ public class MySet extends List<SubSet> {
 		
 		while (!it2.isOnFlag()) {
 			it1.addLeft(it2.getValue().copyOf());
+			it1.goForward();
 			it2.goForward();
 		}
 	}
@@ -368,10 +385,6 @@ public class MySet extends List<SubSet> {
 		}
 
 		MySet set2 = (MySet) o;
-		if (size() != set2.size()) {
-			return false;
-		}
-		
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
@@ -384,7 +397,7 @@ public class MySet extends List<SubSet> {
 			it1.goForward();
 			it2.goForward();
 		}
-		return true;
+		return true && it1.isOnFlag() && it2.isOnFlag();
 	}
 
 	/**
@@ -392,19 +405,29 @@ public class MySet extends List<SubSet> {
 	 * @return true si this est inclus dans set2, false sinon
 	 */
 	public boolean isIncludedIn(MySet set2) {
-		Iterator<SubSet> it2 = set2.iterator();
+		if (this == set2) {
+			return true;
+		}
 
-		while (!it2.isOnFlag()) {
+		Iterator<SubSet> it1 = iterator();
+		Iterator<SubSet> it2 = set2.iterator();
+		
+		while (!it1.isOnFlag() && !it2.isOnFlag()) {
+			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
-			for (int i = 0; i < 256; i++) {
-				int x = (256 * sub2.rank) + i;
-				if (sub2.set.contains(i) && !this.containsValue(x)) {
+			if (sub1.rank < sub2.rank) {
+				return false;
+			} else if (sub1.rank > sub2.rank) {
+				it2.goForward();
+			} else {
+				if (!sub1.set.isIncludedIn(sub2.set)) {
 					return false;
 				}
+				it1.goForward();
+				it2.goForward();
 			}
-			it2.goForward();
 		}
-		return true;
+		return true && it1.isOnFlag();
 	}
 
 	// /////////////////////////////////////////////////////////////////////////////
