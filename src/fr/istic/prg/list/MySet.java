@@ -274,6 +274,10 @@ public class MySet extends List<SubSet> {
 	 * @param set2 deuxième ensemble
 	 */
 	public void symmetricDifference(MySet set2) {
+		if (this == set2) {
+			this.clear();
+			return;
+		}
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
@@ -287,7 +291,13 @@ public class MySet extends List<SubSet> {
 				it2.goForward();
 			} else {
 				sub1.set.symmetricDifference(sub2.set);
-				it1.goForward();
+				if (sub1.set.isEmpty()) {
+					it1.remove();
+				}
+				else {
+					it1.goForward();
+				}
+				
 				it2.goForward();
 			}
 		}
