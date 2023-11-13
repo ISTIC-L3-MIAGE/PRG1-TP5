@@ -301,6 +301,12 @@ public class MySet extends List<SubSet> {
 				it2.goForward();
 			}
 		}
+		
+		while (!it2.isOnFlag()) {
+			it1.addLeft(it2.getValue().copyOf());
+			it1.goForward();
+			it2.goForward();
+		}
 	}
 
 	/**
