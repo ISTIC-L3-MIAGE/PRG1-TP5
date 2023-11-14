@@ -240,13 +240,13 @@ public class MySet extends List<SubSet> {
 	 * @param set2 deuxième ensemble
 	 */
 	public void difference(MySet set2) {
-		Iterator<SubSet> it1 = iterator();
-		Iterator<SubSet> it2 = set2.iterator();
-		
 		if (this == set2) {
 			this.clear();
 			return;
 		}
+		
+		Iterator<SubSet> it1 = iterator();
+		Iterator<SubSet> it2 = set2.iterator();
 
 		while (!it1.isOnFlag() && !it2.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
@@ -278,6 +278,7 @@ public class MySet extends List<SubSet> {
 			this.clear();
 			return;
 		}
+		
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
@@ -287,17 +288,15 @@ public class MySet extends List<SubSet> {
 			if (sub1.rank < sub2.rank) {
 				it1.goForward();
 			} else if (sub1.rank > sub2.rank) {
-				it1.addLeft(sub2.copyOf()); // test this
+				it1.addLeft(sub2.copyOf());
 				it2.goForward();
 			} else {
 				sub1.set.symmetricDifference(sub2.set);
 				if (sub1.set.isEmpty()) {
 					it1.remove();
-				}
-				else {
+				} else {
 					it1.goForward();
 				}
-				
 				it2.goForward();
 			}
 		}
@@ -341,7 +340,7 @@ public class MySet extends List<SubSet> {
 			}
 		}
 		
-		while (!it1.isOnFlag() && it2.isOnFlag()) {
+		while (!it1.isOnFlag()) {
 			it1.remove();
 		}
 	}
@@ -413,7 +412,7 @@ public class MySet extends List<SubSet> {
 			it1.goForward();
 			it2.goForward();
 		}
-		return true && it1.isOnFlag() && it2.isOnFlag();
+		return it1.isOnFlag() && it2.isOnFlag();
 	}
 
 	/**
@@ -443,7 +442,7 @@ public class MySet extends List<SubSet> {
 				it2.goForward();
 			}
 		}
-		return true && it1.isOnFlag();
+		return it1.isOnFlag();
 	}
 
 	// /////////////////////////////////////////////////////////////////////////////
