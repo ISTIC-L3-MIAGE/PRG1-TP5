@@ -1,19 +1,18 @@
 
 package fr.istic.prg.list;
 
+/**
+ * @author Antonella Atterey <antonella.atterey@etudiant.univ-rennes1.fr>
+ * @author Ezan Tahi <ezan.tahi@etudiant.univ-rennes1.fr>
+ * @class L3 MIAGE 2023/2024
+ */
+
 
 import fr.istic.prg.list_util.Iterator;
 import fr.istic.prg.list_util.SuperT;
 
 /**
  * Liste en double chaînage par références
- * 
- * @author Mickaël Foursov
- * @author Vincent Drevelle
- * 
- *         Version corrigée et instrumentée (compte du nombre d'opérations).
- *         Utilise un versionnage pour empêcher les modifs concurrentes.
- * 
  * @param <T> : le type de valeurs stockées
  */
 public class List<T extends SuperT<T>> {

@@ -1,10 +1,16 @@
 package fr.istic.prg.list;
 
+/**
+ * @author Antonella Atterey <antonella.atterey@etudiant.univ-rennes1.fr>
+ * @author Ezan Tahi <ezan.tahi@etudiant.univ-rennes1.fr>
+ * @class L3 MIAGE 2023/2024
+ */
+
 import java.io.FileInputStream;
 
 import fr.istic.prg.list_util.Comparison;
 import fr.istic.prg.list_util.Iterator;
-import fr.istic.prg.list_util.List;
+//import fr.istic.prg.list_util.List;
 import fr.istic.prg.list_util.SmallSet;
 
 import java.io.FileNotFoundException;
@@ -14,11 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Scanner;
 
-/**
- * @author Antonella Atterey <antonella.atterey@etudiant.univ-rennes1.fr>
- * @author Ezan Tahi <ezan.tahi@etudiant.univ-rennes1.fr>
- * @class L3 MIAGE 2023/2024
- */
+
 
 public class MySet extends List<SubSet> {
 
@@ -118,7 +120,7 @@ public class MySet extends List<SubSet> {
 	 * @param is flux d'entrée.
 	 */
 	public void addAllFromStream(InputStream is) {
-		Scanner scan = new Scanner(is);
+		Scanner scan = (is == System.in) ? standardInput: new Scanner(is);
 		try {
 			int number = scan.nextInt();
 			while (number != -1) {
@@ -142,7 +144,6 @@ public class MySet extends List<SubSet> {
 	 */
 	public void addNumber(int value) {
 		Iterator<SubSet> it = iterator();
-		// Parcours et ajout
 		int rank = value / 256;
 		if (0 <= rank && rank < MAX_RANG) {
 			while (it.getValue().rank < rank) {
@@ -175,7 +176,7 @@ public class MySet extends List<SubSet> {
 	 * @param is flux d'entrée
 	 */
 	public void removeAllFromStream(InputStream is) {
-		Scanner scan = new Scanner(is);
+		Scanner scan = (is == System.in) ? standardInput: new Scanner(is);
 		try {
 			int number = scan.nextInt();
 			while (number != -1) {
@@ -199,7 +200,6 @@ public class MySet extends List<SubSet> {
 	 */
 	public void removeNumber(int value) {
 		Iterator<SubSet> it = iterator();
-		// Parcours et suppression
 		int rank = value / 256;
 		if (0 <= rank && rank < MAX_RANG) {
 			while (it.getValue().rank < rank) {
@@ -302,8 +302,7 @@ public class MySet extends List<SubSet> {
 		}
 		
 		while (!it2.isOnFlag()) {
-			it1.addLeft(it2.getValue().copyOf());
-			it1.goForward();
+			this.addTail(it2.getValue().copyOf());
 			it2.goForward();
 		}
 	}
@@ -374,8 +373,7 @@ public class MySet extends List<SubSet> {
 		}
 		
 		while (!it2.isOnFlag()) {
-			it1.addLeft(it2.getValue().copyOf());
-			it1.goForward();
+			this.addTail(it2.getValue().copyOf());
 			it2.goForward();
 		}
 	}
