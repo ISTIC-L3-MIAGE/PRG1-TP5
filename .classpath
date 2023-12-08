@@ -7,6 +7,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="D:/Home/etahi/Documents/PRG1/PRG1-TP5/tp-listes.jar"/>
+	<classpathentry kind="lib" path="D:/JAVA PROJECT/PRG1-TP5/tp-listes.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

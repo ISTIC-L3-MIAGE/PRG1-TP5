@@ -282,7 +282,7 @@ public class MySet extends List<SubSet> {
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
-		while (!it1.isOnFlag() && !it2.isOnFlag()) {
+		while (!it1.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
 			if (sub1.rank < sub2.rank) {
@@ -299,11 +299,11 @@ public class MySet extends List<SubSet> {
 				}
 				it2.goForward();
 			}
-		}
-		
-		while (!it2.isOnFlag()) {
-			this.addTail(it2.getValue().copyOf());
-			it2.goForward();
+			
+			while (it1.isOnFlag() && !it2.isOnFlag()) {
+				this.addTail(it2.getValue().copyOf());
+				it2.goForward();
+			}
 		}
 	}
 
@@ -320,7 +320,7 @@ public class MySet extends List<SubSet> {
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
-		while (!it1.isOnFlag() && !it2.isOnFlag()) {
+		while (!it2.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
 			if (sub1.rank < sub2.rank) {
@@ -337,10 +337,10 @@ public class MySet extends List<SubSet> {
 				}
 				it2.goForward();
 			}
-		}
-		
-		while (!it1.isOnFlag()) {
-			it1.remove();
+			
+			while (it2.isOnFlag() && !it1.isOnFlag()) {
+				it1.remove();
+			}
 		}
 	}
 
@@ -357,7 +357,7 @@ public class MySet extends List<SubSet> {
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
-		while (!it1.isOnFlag() && !it2.isOnFlag()) {
+		while (!it1.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
 			if (sub1.rank < sub2.rank) {
@@ -370,11 +370,11 @@ public class MySet extends List<SubSet> {
 				it1.goForward();
 				it2.goForward();
 			}
-		}
-		
-		while (!it2.isOnFlag()) {
-			this.addTail(it2.getValue().copyOf());
-			it2.goForward();
+			
+			while (it1.isOnFlag() && !it2.isOnFlag()) {
+				this.addTail(it2.getValue().copyOf());
+				it2.goForward();
+			}
 		}
 	}
 
@@ -424,23 +424,24 @@ public class MySet extends List<SubSet> {
 
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
+		boolean inclusion = true;
 		
-		while (!it1.isOnFlag() && !it2.isOnFlag()) {
+		while (!it1.isOnFlag() && inclusion) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
 			if (sub1.rank < sub2.rank) {
-				return false;
+				inclusion = false;
 			} else if (sub1.rank > sub2.rank) {
 				it2.goForward();
 			} else {
 				if (!sub1.set.isIncludedIn(sub2.set)) {
-					return false;
+					inclusion = false;
 				}
 				it1.goForward();
 				it2.goForward();
 			}
 		}
-		return it1.isOnFlag();
+		return it1.isOnFlag() && inclusion;
 	}
 
 	// /////////////////////////////////////////////////////////////////////////////

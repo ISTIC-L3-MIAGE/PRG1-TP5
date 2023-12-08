@@ -91,13 +91,8 @@ public class List<T extends SuperT<T>> {
 
 		@Override
 		public void addLeft(T value) {
-			Element newValue = new Element();
-			newValue.value = value;
-			newValue.left = current.left;
-			newValue.right = current;
-			current.left.right = newValue;
-			current.left = newValue;
-			current = newValue;
+			this.goBackward();
+			this.addRight(value);
 		}
 
 		@Override
@@ -156,7 +151,6 @@ public class List<T extends SuperT<T>> {
 	 * Supprimer toutes les valeurs de la liste.
 	 */
 	public void clear() {
-		flag = new Element();
 		flag.right = flag;
 		flag.left = flag;
 	}
