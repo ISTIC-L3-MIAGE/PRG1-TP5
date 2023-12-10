@@ -7,12 +7,6 @@ package fr.istic.prg.list;
  */
 
 import java.io.FileInputStream;
-
-import fr.istic.prg.list_util.Comparison;
-import fr.istic.prg.list_util.Iterator;
-//import fr.istic.prg.list_util.List;
-import fr.istic.prg.list_util.SmallSet;
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,7 +14,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Scanner;
 
-
+import fr.istic.prg.list_util.Comparison;
+import fr.istic.prg.list_util.Iterator;
+//import fr.istic.prg.list_util.List;
+import fr.istic.prg.list_util.SmallSet;
 
 public class MySet extends List<SubSet> {
 
@@ -120,7 +117,7 @@ public class MySet extends List<SubSet> {
 	 * @param is flux d'entrée.
 	 */
 	public void addAllFromStream(InputStream is) {
-		Scanner scan = (is == System.in) ? standardInput: new Scanner(is);
+		Scanner scan = (is == System.in) ? standardInput : new Scanner(is);
 		try {
 			int number = scan.nextInt();
 			while (number != -1) {
@@ -176,7 +173,7 @@ public class MySet extends List<SubSet> {
 	 * @param is flux d'entrée
 	 */
 	public void removeAllFromStream(InputStream is) {
-		Scanner scan = (is == System.in) ? standardInput: new Scanner(is);
+		Scanner scan = (is == System.in) ? standardInput : new Scanner(is);
 		try {
 			int number = scan.nextInt();
 			while (number != -1) {
@@ -244,26 +241,31 @@ public class MySet extends List<SubSet> {
 			this.clear();
 			return;
 		}
-		
+
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
 		while (!it1.isOnFlag() && !it2.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
-			if (sub1.rank < sub2.rank) {
+			// Différence
+			switch (compare(sub1.rank, sub2.rank)) {
+			case INF:
 				it1.goForward();
-			} else if (sub1.rank > sub2.rank) {
+				break;
+			case SUP:
 				it2.goForward();
-			} else {
+				break;
+			case EGAL:
 				sub1.set.difference(sub2.set);
-				// Suppression des SubSet vides
+				// On supprime les SubSet vides
 				if (sub1.set.isEmpty()) {
 					it1.remove();
 				} else {
 					it1.goForward();
 				}
 				it2.goForward();
+				break;
 			}
 		}
 	}
@@ -278,28 +280,35 @@ public class MySet extends List<SubSet> {
 			this.clear();
 			return;
 		}
-		
+
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
 		while (!it1.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
-			if (sub1.rank < sub2.rank) {
+			// Différence symétrique
+			switch (compare(sub1.rank, sub2.rank)) {
+			case INF:
 				it1.goForward();
-			} else if (sub1.rank > sub2.rank) {
+				break;
+			case SUP:
 				it1.addLeft(sub2.copyOf());
 				it2.goForward();
-			} else {
+				break;
+			case EGAL:
 				sub1.set.symmetricDifference(sub2.set);
+				// On supprime les SubSet vides
 				if (sub1.set.isEmpty()) {
 					it1.remove();
 				} else {
 					it1.goForward();
 				}
 				it2.goForward();
+				break;
 			}
-			
+			// On ajoute à la fin de this les éléments restant de set2 car ils ne sont pas
+			// dans this
 			while (it1.isOnFlag() && !it2.isOnFlag()) {
 				this.addTail(it2.getValue().copyOf());
 				it2.goForward();
@@ -316,28 +325,33 @@ public class MySet extends List<SubSet> {
 		if (this == set2) {
 			return;
 		}
-		
+
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
 		while (!it2.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
-			if (sub1.rank < sub2.rank) {
+			// Intersection
+			switch (compare(sub1.rank, sub2.rank)) {
+			case INF:
 				it1.remove();
-			} else if (sub1.rank > sub2.rank) {
+				break;
+			case SUP:
 				it2.goForward();
-			} else {
+				break;
+			case EGAL:
 				sub1.set.intersection(sub2.set);
-				// Suppression des SubSet vides
+				// On supprime les SubSet vides
 				if (sub1.set.isEmpty()) {
 					it1.remove();
 				} else {
 					it1.goForward();
 				}
 				it2.goForward();
+				break;
 			}
-			
+			// On supprime les éléments restant de this qui ne sont pas dans set2
 			while (it2.isOnFlag() && !it1.isOnFlag()) {
 				it1.remove();
 			}
@@ -353,24 +367,29 @@ public class MySet extends List<SubSet> {
 		if (this == set2) {
 			return;
 		}
-		
+
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 
 		while (!it1.isOnFlag()) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
-			if (sub1.rank < sub2.rank) {
+			// Union des ensembles
+			switch (compare(sub1.rank, sub2.rank)) {
+			case INF:
 				it1.goForward();
-			} else if (sub1.rank > sub2.rank) {
-				it1.addLeft(it2.getValue().copyOf());
+				break;
+			case SUP:
+				it1.addLeft(sub2.copyOf());
 				it2.goForward();
-			} else {
+				break;
+			case EGAL:
 				sub1.set.union(sub2.set);
 				it1.goForward();
 				it2.goForward();
+				break;
 			}
-			
+			// On ajoute les éléments restant de set2 dans this
 			while (it1.isOnFlag() && !it2.isOnFlag()) {
 				this.addTail(it2.getValue().copyOf());
 				it2.goForward();
@@ -400,17 +419,18 @@ public class MySet extends List<SubSet> {
 		MySet set2 = (MySet) o;
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
+		boolean equality = true;
 
-		while (!it1.isOnFlag() && !it2.isOnFlag()) {
+		while (!it1.isOnFlag() && !it2.isOnFlag() && equality) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
-			if (!sub1.equals(sub2)) {
-				return false;
-			}
+			// Test d'égalité
+			equality = sub1.equals(sub2);
 			it1.goForward();
 			it2.goForward();
 		}
-		return it1.isOnFlag() && it2.isOnFlag();
+		// Résultat
+		return it1.isOnFlag() && it2.isOnFlag() && equality;
 	}
 
 	/**
@@ -425,23 +445,27 @@ public class MySet extends List<SubSet> {
 		Iterator<SubSet> it1 = iterator();
 		Iterator<SubSet> it2 = set2.iterator();
 		boolean inclusion = true;
-		
+
 		while (!it1.isOnFlag() && inclusion) {
 			SubSet sub1 = it1.getValue();
 			SubSet sub2 = it2.getValue();
-			if (sub1.rank < sub2.rank) {
+			// Test d'inclusion
+			switch (compare(sub1.rank, sub2.rank)) {
+			case INF:
 				inclusion = false;
-			} else if (sub1.rank > sub2.rank) {
+				break;
+			case SUP:
 				it2.goForward();
-			} else {
-				if (!sub1.set.isIncludedIn(sub2.set)) {
-					inclusion = false;
-				}
+				break;
+			case EGAL:
+				inclusion = sub1.set.isIncludedIn(sub2.set);
 				it1.goForward();
 				it2.goForward();
+				break;
 			}
 		}
-		return it1.isOnFlag() && inclusion;
+		// Résultat
+		return inclusion;
 	}
 
 	// /////////////////////////////////////////////////////////////////////////////
